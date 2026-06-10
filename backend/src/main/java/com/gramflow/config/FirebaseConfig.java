@@ -16,12 +16,16 @@ public class FirebaseConfig {
         // Load service account key from classpath (src/main/resources)
         InputStream serviceAccount = FirebaseConfig.class.getClassLoader()
                 .getResourceAsStream("firebase-service-account.json");
-        if (serviceAccount == null) {
-            throw new IllegalStateException("Firebase service account file not found in classpath");
+        FirebaseOptions options;
+        if (serviceAccount != null) {
+            options = FirebaseOptions.builder()
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .build();
+        } else {
+            options = FirebaseOptions.builder()
+                    .setCredentials(GoogleCredentials.getApplicationDefault())
+                    .build();
         }
-        FirebaseOptions options = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                .build();
         return FirebaseApp.initializeApp(options);
     }
 
