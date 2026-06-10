@@ -46,8 +46,9 @@ dependencies {
 	implementation 'com.bucket4j:bucket4j-core:8.10.1'
 }
 
+// BootJar is required for Cloud Run buildpacks to generate the executable container
 tasks.named('bootJar') {
-    enabled = false
+    enabled = true
 }
 
 // Existing test task configuration
