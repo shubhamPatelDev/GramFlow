@@ -16,7 +16,7 @@ export default function BillingView() {
 
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        name: "Commentor",
+        name: "GramFlow",
         description: "Upgrade to Pro Monthly",
         subscription_id: sub.subscriptionId,
         handler: async function (response) {

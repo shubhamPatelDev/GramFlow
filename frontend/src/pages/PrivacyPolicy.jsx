@@ -50,7 +50,7 @@ export default function PrivacyPolicy() {
 
             <h2 className="text-foreground text-2xl font-bold mt-8 mb-4">5. Contact Us</h2>
             <p>
-              If you have any questions about this Privacy Policy or wish to manually request data deletion, please contact our support team at privacy@commentor.example.com.
+              If you have any questions about this Privacy Policy or wish to manually request data deletion, please contact our support team via the Support portal in your dashboard.
             </p>
           </CardContent>
         </Card>
