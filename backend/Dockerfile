@@ -7,7 +7,8 @@ COPY settings.gradle .
 COPY src src
 RUN sed -i 's/\r$//' gradlew
 RUN chmod +x ./gradlew
-RUN ./gradlew build -x test
+ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Xmx512m"
+RUN ./gradlew build -x test --no-daemon
 
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
