@@ -14,17 +14,26 @@ public class FirebaseConfig {
     @Bean
     public FirebaseApp firebaseApp() throws IOException {
         // Load service account key from classpath (src/main/resources)
-        InputStream serviceAccount = FirebaseConfig.class.getClassLoader()
-                .getResourceAsStream("firebase-service-account.json");
         FirebaseOptions options;
-        if (serviceAccount != null) {
+        String envJson = System.getenv("FIREBASE_SERVICE_ACCOUNT_BASE64");
+        
+        if (envJson != null && !envJson.isEmpty()) {
+            byte[] decoded = java.util.Base64.getDecoder().decode(envJson);
             options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .setCredentials(GoogleCredentials.fromStream(new java.io.ByteArrayInputStream(decoded)))
                     .build();
         } else {
-            options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.getApplicationDefault())
-                    .build();
+            InputStream serviceAccount = FirebaseConfig.class.getClassLoader()
+                    .getResourceAsStream("firebase-service-account.json");
+            if (serviceAccount != null) {
+                options = FirebaseOptions.builder()
+                        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                        .build();
+            } else {
+                options = FirebaseOptions.builder()
+                        .setCredentials(GoogleCredentials.getApplicationDefault())
+                        .build();
+            }
         }
         return FirebaseApp.initializeApp(options);
     }
