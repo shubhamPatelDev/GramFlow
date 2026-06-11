@@ -11,7 +11,7 @@ ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Xmx512m"
 RUN ./gradlew build -x test --no-daemon
 RUN find build/libs -name "*.jar" -not -name "*-plain.jar" -exec cp {} app.jar \;
 
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:21-jre
 WORKDIR /app
 COPY --from=build /app/app.jar app.jar
 EXPOSE 8080
