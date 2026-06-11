@@ -94,7 +94,7 @@ export default function BillingView() {
           <CardContent className="space-y-6">
             <p className="text-4xl font-bold font-headline">₹299 <span className="text-sm text-muted-foreground">/mo</span></p>
             <ul className="space-y-3">
-              <li className="flex gap-2 items-center text-sm"><Check size={16} className="text-primary"/> Unlimited Accounts</li>
+              <li className="flex gap-2 items-center text-sm"><Check size={16} className="text-primary"/> 1 Account</li>
               <li className="flex gap-2 items-center text-sm"><Check size={16} className="text-primary"/> Unlimited Automation Rules</li>
               <li className="flex gap-2 items-center text-sm"><Check size={16} className="text-primary"/> Priority Email Support</li>
             </ul>
