@@ -60,7 +60,7 @@ export default function LandingPage() {
                 <Target size={24} />
               </div>
               <h3 className="text-2xl font-headline font-bold">Seamless Meta Integration</h3>
-              <p className="text-muted-foreground">Connect your Instagram Professional accounts securely using the official Meta Graph API in one click.</p>
+              <p className="text-muted-foreground">Connect your Instagram Professional account securely using the official Meta Graph API in one click.</p>
             </div>
             <div className="space-y-4">
               <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">

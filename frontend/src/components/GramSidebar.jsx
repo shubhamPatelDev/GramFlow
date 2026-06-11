@@ -17,7 +17,7 @@ import {
 const mainNav = [
   { name: "Insights", icon: LayoutDashboard, href: "/dashboard/insights" },
   { name: "Automation Rules", icon: Zap, href: "/dashboard/rules" },
-  { name: "Accounts", icon: Instagram, href: "/dashboard/accounts" },
+  { name: "Account", icon: Instagram, href: "/dashboard/accounts" },
 ];
 
 const secondaryNav = [

@@ -10,7 +10,7 @@ export default function AccountsView() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-200">
       <div>
-        <h2 className="text-3xl font-headline font-bold text-foreground">Connected Accounts</h2>
+        <h2 className="text-3xl font-headline font-bold text-foreground">Connected Account</h2>
         <p className="text-muted-foreground mt-1 text-lg">Manage your linked social profiles.</p>
       </div>
 
