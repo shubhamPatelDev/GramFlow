@@ -21,13 +21,13 @@ public class SupportController {
 
     @PostMapping("/tickets")
     public ResponseEntity<?> createTicket(@Valid @RequestBody SupportRequest request, Authentication authentication) {
-        String userId = authentication.getName();
+        String email = authentication.getName();
         
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         SupportTicket ticket = SupportTicket.builder()
-                .userId(userId)
+                .userId(user.getId())
                 .email(user.getEmail())
                 .subject(request.getSubject())
                 .message(request.getMessage())
