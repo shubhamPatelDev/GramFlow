@@ -161,7 +161,7 @@ export default function DashboardLayout() {
                               warningMsg = `Your Free Trial expires in ${daysLeft} days. Upgrade to keep your automations running!`;
                             }
                          }
-                       } else if (user.createdAt) {
+                     } else if (user.createdAt) {
                          // Fallback
                          const created = new Date(user.createdAt[0], user.createdAt[1]-1, user.createdAt[2], user.createdAt[3], user.createdAt[4]);
                          const trialEnd = new Date(created.getTime() + 10 * 24 * 60 * 60 * 1000);
@@ -169,6 +169,11 @@ export default function DashboardLayout() {
                             warningMsg = "Your 10-day Free Trial has expired. Your automations are currently halted.";
                             isExpired = true;
                          }
+                       }
+                       
+                       if (!isExpired && user.monthlyRepliesCount >= 50) {
+                           warningMsg = "You've reached your free tier limit of 50 auto-replies this month. Your automations are currently halted.";
+                           isExpired = true;
                        }
                     } else {
                        if (user.subscriptionValidUntil) {

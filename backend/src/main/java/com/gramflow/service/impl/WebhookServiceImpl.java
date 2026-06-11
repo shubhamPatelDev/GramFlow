@@ -134,6 +134,18 @@ public class WebhookServiceImpl implements WebhookService {
                                         log.warn("FREE user {} matched automation is not the single active. Skipping.", user.getEmail());
                                         continue;
                                     }
+
+                                    // 50 Auto-Replies limit enforcement
+                                    if (user.getMonthlyRepliesResetDate() == null || currentDateTime.isAfter(user.getMonthlyRepliesResetDate())) {
+                                        user.setMonthlyRepliesCount(0);
+                                        user.setMonthlyRepliesResetDate(currentDateTime.plusMonths(1));
+                                        userRepository.save(user);
+                                    }
+
+                                    if (user.getMonthlyRepliesCount() != null && user.getMonthlyRepliesCount() >= 50) {
+                                        log.warn("FREE user {} has reached 50 replies/mo limit. Automations halted.", user.getEmail());
+                                        continue;
+                                    }
                                 } else {
                                     // PRO/Business Tier enforcement
                                     if (user.getSubscriptionValidUntil() != null && currentDateTime.isAfter(user.getSubscriptionValidUntil())) {
@@ -155,6 +167,12 @@ public class WebhookServiceImpl implements WebhookService {
                                 // Track real analytics
                                 automation.setRepliesSent((automation.getRepliesSent() == null ? 0 : automation.getRepliesSent()) + 1);
                                 automationRepository.save(automation);
+                                
+                                // Increment free tier usage
+                                if (user != null && (user.getSubscriptionTier() == null || user.getSubscriptionTier() == SubscriptionTier.FREE)) {
+                                    user.setMonthlyRepliesCount((user.getMonthlyRepliesCount() == null ? 0 : user.getMonthlyRepliesCount()) + 1);
+                                    userRepository.save(user);
+                                }
                             } else {
                                 log.warn("Rate limit exceeded for Instagram Account {}. Dropping reply to prevent Meta ban.", igAccountId);
                             }

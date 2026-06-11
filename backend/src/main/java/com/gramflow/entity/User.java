@@ -29,4 +29,8 @@ public class User {
     // Subscription Limits
     private LocalDateTime trialEndsAt;
     private LocalDateTime subscriptionValidUntil;
+    
+    @Builder.Default
+    private Integer monthlyRepliesCount = 0;
+    private LocalDateTime monthlyRepliesResetDate;
 }
