@@ -10,5 +10,5 @@ public interface InstagramService {
     InstagramAccount connectAccount(User user, String shortLivedToken);
     List<MediaResponse> fetchMedia(User user);
     InstagramAccount getConnectedAccount(User user);
-    void sendPrivateReply(String commentId, String replyMessage, String pageAccessToken);
+    void sendPrivateReply(String commentId, String replyMessage, String pageId, String pageAccessToken);
 }

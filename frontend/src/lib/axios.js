@@ -21,12 +21,12 @@ apiInstance.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle 401s (token expiry)
+// Response interceptor to handle 401s and 403s (token expiry or missing auth)
 apiInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // Clear token and redirect to login if unauthorized
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      // Clear token and redirect to login if unauthorized or forbidden
       localStorage.removeItem('jwt_token');
       // Using window.location instead of react-router here to avoid circular dependencies
       if (window.location.pathname !== '/login') {

@@ -11,10 +11,12 @@ import AccountsView from "./pages/AccountsView";
 import SettingsView from "./pages/SettingsView";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
     <AuthProvider>
+      <Toaster position="bottom-right" />
       <Router>
         <Routes>
           <Route path="/" element={<LandingPage />} />

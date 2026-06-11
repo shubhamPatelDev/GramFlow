@@ -17,10 +17,10 @@ import java.util.Map;
 @Component
 public class JwtUtils {
 
-    @Value("${jwt.secret:defaultSecretKey12345678901234567}")
+    @Value("${app.jwt.secret:defaultSecretKey12345678901234567}")
     private String jwtSecret;
 
-    @Value("${jwt.expirationMs:86400000}")
+    @Value("${app.jwt.expiration-ms:86400000}")
     private int jwtExpirationMs;
 
 

@@ -56,8 +56,38 @@ public class WebhookController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> receiveWebhookEvent(@RequestBody String payload) {
-        log.info("Received Facebook Webhook event payload");
+    public ResponseEntity<Void> receiveWebhookEvent(
+            @RequestHeader(value = "X-Hub-Signature-256", required = false) String signature,
+            @RequestBody String payload) {
+        
+        if (signature == null) {
+            log.warn("Received webhook without signature");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        try {
+            Mac mac = Mac.getInstance("HmacSHA256");
+            SecretKeySpec secretKey = new SecretKeySpec(clientSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+            mac.init(secretKey);
+            byte[] expectedSigBytes = mac.doFinal(payload.getBytes(StandardCharsets.UTF_8));
+            
+            // Format to hex
+            StringBuilder sb = new StringBuilder();
+            for (byte b : expectedSigBytes) {
+                sb.append(String.format("%02x", b));
+            }
+            String expectedSig = "sha256=" + sb.toString();
+
+            if (!expectedSig.equalsIgnoreCase(signature)) {
+                log.error("Invalid Webhook signature from Meta");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        } catch (Exception e) {
+            log.error("Error verifying webhook signature", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        log.info("Received Facebook Webhook event payload: {}", payload);
         webhookFacade.receiveWebhookEvent(payload);
         return ResponseEntity.ok().build();
     }

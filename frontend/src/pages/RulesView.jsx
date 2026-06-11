@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { automationAPI, instagramAPI } from "@/lib/api";
 import { useOutletContext } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export default function RulesView() {
   const { isConnected, rules: initialRules, setRules, media: initialMedia, setMedia } = useOutletContext() || { isConnected: false };
@@ -51,8 +52,9 @@ export default function RulesView() {
       setRules([...rules, newRule]);
       setRuleFormData({ triggerKeyword: "", replyMessage: "", mediaId: "" });
       setIsAdding(false);
+      toast.success("Automation rule created!");
     } catch (error) {
-      alert(error.response?.data?.message || "Failed to create rule");
+      toast.error(error.response?.data?.message || "Failed to create rule");
     } finally {
       setSubmitting(false);
     }
@@ -64,10 +66,11 @@ export default function RulesView() {
     
     try {
       await automationAPI.toggle(id);
+      toast.success(rules.find(r => r.id === id)?.active ? "Automation disabled" : "Automation enabled");
     } catch (error) {
       // Revert if API fails
       setRules(rules.map(r => r.id === id ? { ...r, active: !r.active } : r));
-      alert(error.response?.data?.message || "Failed to toggle rule");
+      toast.error(error.response?.data?.message || "Failed to toggle rule");
     }
   };
 
@@ -75,8 +78,9 @@ export default function RulesView() {
     try {
       await automationAPI.delete(id);
       setRules(rules.filter(r => r.id !== id));
+      toast.success("Automation deleted");
     } catch (error) {
-      alert("Failed to delete rule");
+      toast.error("Failed to delete rule");
     }
   };
 

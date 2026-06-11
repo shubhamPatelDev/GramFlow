@@ -1,5 +1,6 @@
 package com.gramflow.entity;
 
+import com.google.cloud.firestore.annotation.DocumentId;
 import lombok.*;
 import java.time.LocalDateTime;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 public class User {
 
+    @DocumentId
     private String id;
     private String email;
     private String password; // Will be null for Google users
@@ -23,4 +25,8 @@ public class User {
     private String verificationToken;
     private SubscriptionTier subscriptionTier;
     private LocalDateTime createdAt;
+    
+    // Subscription Limits
+    private LocalDateTime trialEndsAt;
+    private LocalDateTime subscriptionValidUntil;
 }

@@ -28,11 +28,11 @@ public class WebhookServiceImpl implements WebhookService {
     private final com.gramflow.repository.UserRepository userRepository;
     private final RateLimitService rateLimitService;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final java.util.concurrent.ConcurrentHashMap<String, Long> processedComments = new java.util.concurrent.ConcurrentHashMap<>();
 
     @Override
-    @Async("webhookTaskExecutor")
     public void processWebhookEvent(String payload) {
-        log.info("Processing webhook event asynchronously in thread: {}", Thread.currentThread().getName());
+        log.info("Processing webhook event synchronously to prevent Cloud Run CPU throttling...");
         try {
             JsonNode root = objectMapper.readTree(payload);
             String objectField = root.has("object") ? root.get("object").asText() : "";
@@ -85,6 +85,15 @@ public class WebhookServiceImpl implements WebhookService {
                         continue;
                     }
 
+                    // Debouncing logic to prevent duplicate webhook pings within 5 minutes
+                    long currentMillis = System.currentTimeMillis();
+                    processedComments.entrySet().removeIf(mapEntry -> currentMillis - mapEntry.getValue() > 300000); // 5 mins cleanup
+                    
+                    if (processedComments.putIfAbsent(commentId, currentMillis) != null) {
+                        log.warn("Duplicate webhook detected for comment ID {}. Dropping to prevent spam.", commentId);
+                        continue;
+                    }
+
                     List<Automation> automations = automationRepository
                             .findByInstagramAccountIdAndMediaIdAndActiveTrue(igAccountId, mediaId);
 
@@ -95,20 +104,42 @@ public class WebhookServiceImpl implements WebhookService {
 
                             // Validate subscription limits at runtime
                             User user = userRepository.findById(userId).orElse(null);
-                            if (user != null && user.getSubscriptionTier() == SubscriptionTier.FREE) {
-                                List<Automation> userAutomations = automationRepository.findByUserId(user.getId());
-                                List<Automation> activeAutos = userAutomations.stream()
-                                        .filter(Automation::isActive)
-                                        .toList();
+                            if (user != null) {
+                                java.time.LocalDateTime currentDateTime = java.time.LocalDateTime.now();
+                                boolean isFreeTier = user.getSubscriptionTier() == null || user.getSubscriptionTier() == SubscriptionTier.FREE;
+                                
+                                if (isFreeTier) {
+                                    // 10-day trial enforcement
+                                    java.time.LocalDateTime trialEndsAt = user.getTrialEndsAt();
+                                    if (trialEndsAt == null && user.getCreatedAt() != null) {
+                                        trialEndsAt = user.getCreatedAt().plusDays(10);
+                                    }
+                                    if (trialEndsAt != null && currentDateTime.isAfter(trialEndsAt)) {
+                                        log.warn("FREE user {} has exceeded 10-day trial limit. Automations halted.", user.getEmail());
+                                        continue;
+                                    }
 
-                                if (activeAutos.size() > 1) {
-                                    log.warn("FREE user {} has {} active automations. Limit is 1. Skipping execution.", user.getEmail(), activeAutos.size());
-                                    continue;
-                                }
+                                    // Max 1 active automation enforcement
+                                    List<Automation> userAutomations = automationRepository.findByUserId(user.getId());
+                                    List<Automation> activeAutos = userAutomations.stream()
+                                            .filter(Automation::isActive)
+                                            .toList();
 
-                                if (activeAutos.isEmpty() || !activeAutos.get(0).getId().equals(automation.getId())) {
-                                    log.warn("FREE user {} matched automation is not the single active. Skipping.", user.getEmail());
-                                    continue;
+                                    if (activeAutos.size() > 1) {
+                                        log.warn("FREE user {} has {} active automations. Limit is 1. Skipping execution.", user.getEmail(), activeAutos.size());
+                                        continue;
+                                    }
+
+                                    if (activeAutos.isEmpty() || !activeAutos.get(0).getId().equals(automation.getId())) {
+                                        log.warn("FREE user {} matched automation is not the single active. Skipping.", user.getEmail());
+                                        continue;
+                                    }
+                                } else {
+                                    // PRO/Business Tier enforcement
+                                    if (user.getSubscriptionValidUntil() != null && currentDateTime.isAfter(user.getSubscriptionValidUntil())) {
+                                        log.warn("User {}'s paid subscription has expired. Automations halted.", user.getEmail());
+                                        continue;
+                                    }
                                 }
                             }
 
@@ -117,6 +148,7 @@ public class WebhookServiceImpl implements WebhookService {
                                 instagramService.sendPrivateReply(
                                         commentId,
                                         automation.getReplyMessage(),
+                                        account.getPageId(),
                                         account.getPageAccessToken()
                                 );
                                 

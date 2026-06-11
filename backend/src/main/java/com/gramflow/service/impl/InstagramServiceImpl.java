@@ -106,6 +106,20 @@ public class InstagramServiceImpl implements InstagramService {
                     account.setInstagramProfilePicture(igProfilePic);
                     account.setFacebookUserId(fbUserId);
 
+                    // Subscribe the App to the Facebook Page's Webhooks
+                    java.net.URI subscribeUri = UriComponentsBuilder.fromHttpUrl(GRAPH_API_BASE + "/" + pageId + "/subscribed_apps")
+                            .queryParam("subscribed_fields", "feed")
+                            .queryParam("access_token", pageAccessToken)
+                            .build().toUri();
+                    
+                    try {
+                        ResponseEntity<String> subResponse = restTemplate.postForEntity(subscribeUri, null, String.class);
+                        log.info("Subscribed to Page webhooks successfully: {}", subResponse.getBody());
+                    } catch (Exception e) {
+                        log.error("Failed to subscribe app to page webhooks", e);
+                        // We continue even if this fails, but log the error prominently
+                    }
+
                     log.info("Linked Instagram account: {} for user: {}", igUsername, user.getEmail());
                     return instagramAccountRepository.save(account);
                 }
@@ -176,18 +190,23 @@ public class InstagramServiceImpl implements InstagramService {
     }
 
     @Override
-    public void sendPrivateReply(String commentId, String replyMessage, String pageAccessToken) {
-        log.info("Sending private reply to comment: {}", commentId);
+    public void sendPrivateReply(String commentId, String replyMessage, String pageId, String pageAccessToken) {
+        log.info("Sending private reply to comment: {} via Page ID: {}", commentId, pageId);
 
-        java.net.URI replyUri = UriComponentsBuilder.fromHttpUrl(GRAPH_API_BASE + "/" + commentId + "/private_replies")
-                .queryParam("message", replyMessage)
+        java.net.URI replyUri = UriComponentsBuilder.fromHttpUrl(GRAPH_API_BASE + "/" + pageId + "/messages")
                 .queryParam("access_token", pageAccessToken)
                 .build().toUri();
 
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<Map<String, String>> request = new HttpEntity<>(headers);
+            
+            // Build the JSON payload as required by Meta for Instagram DMs
+            Map<String, Object> recipient = Map.of("comment_id", commentId);
+            Map<String, Object> message = Map.of("text", replyMessage);
+            Map<String, Object> payload = Map.of("recipient", recipient, "message", message);
+
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
 
             ResponseEntity<String> response = restTemplate.postForEntity(replyUri, request, String.class);
             if (response.getStatusCode() == HttpStatus.OK) {
@@ -195,6 +214,8 @@ public class InstagramServiceImpl implements InstagramService {
             } else {
                 log.error("Failed to send private reply, status code: {}, body: {}", response.getStatusCode(), response.getBody());
             }
+        } catch (org.springframework.web.client.HttpClientErrorException e) {
+            log.error("HTTP Error sending private reply: {} - {}", e.getStatusCode(), e.getResponseBodyAsString());
         } catch (Exception e) {
             log.error("Error sending private reply via Meta Graph API", e);
         }

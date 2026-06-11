@@ -1,5 +1,6 @@
 package com.gramflow.entity;
 
+import com.google.cloud.firestore.annotation.DocumentId;
 import lombok.*;
 
 @Getter
@@ -9,6 +10,7 @@ import lombok.*;
 @Builder
 public class InstagramAccount {
 
+    @DocumentId
     private String id; // Instagram Business Account ID
     private String userId;
     private String facebookUserId;
