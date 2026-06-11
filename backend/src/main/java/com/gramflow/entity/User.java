@@ -1,6 +1,5 @@
 package com.gramflow.entity;
 
-import com.google.cloud.firestore.annotation.DocumentId;
 import lombok.*;
 import java.time.LocalDateTime;
 
@@ -11,7 +10,6 @@ import java.time.LocalDateTime;
 @Builder
 public class User {
 
-    @DocumentId
     private String id;
     private String email;
     private String password; // Will be null for Google users
