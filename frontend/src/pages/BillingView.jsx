@@ -71,8 +71,8 @@ export default function BillingView() {
           <CardContent className="space-y-6">
             <p className="text-4xl font-bold font-headline">₹0 <span className="text-sm text-muted-foreground">/mo</span></p>
             <ul className="space-y-3">
-              <li className="flex gap-2 items-center text-sm"><Check size={16} className="text-primary"/> 1 Connected Account</li>
-              <li className="flex gap-2 items-center text-sm"><Check size={16} className="text-primary"/> 1 Automation Rule</li>
+              <li className="flex gap-2 items-center text-sm"><Check size={16} className="text-primary"/> 1 Active Automation Rule</li>
+              <li className="flex gap-2 items-center text-sm"><Check size={16} className="text-primary"/> Basic Analytics</li>
               <li className="flex gap-2 items-center text-sm"><Check size={16} className="text-primary"/> Up to 50 Auto-Replies/mo</li>
             </ul>
             <Button variant="outline" className="w-full pointer-events-none" disabled>
@@ -94,8 +94,8 @@ export default function BillingView() {
           <CardContent className="space-y-6">
             <p className="text-4xl font-bold font-headline">₹299 <span className="text-sm text-muted-foreground">/mo</span></p>
             <ul className="space-y-3">
-              <li className="flex gap-2 items-center text-sm"><Check size={16} className="text-primary"/> 1 Account</li>
               <li className="flex gap-2 items-center text-sm"><Check size={16} className="text-primary"/> Unlimited Automation Rules</li>
+              <li className="flex gap-2 items-center text-sm"><Check size={16} className="text-primary"/> Advanced Insights & Leaderboards</li>
               <li className="flex gap-2 items-center text-sm"><Check size={16} className="text-primary"/> Priority Email Support</li>
             </ul>
             {isPro ? (

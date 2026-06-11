@@ -93,6 +93,12 @@ public class InstagramServiceImpl implements InstagramService {
                             ? igNode.get("profile_picture_url").asText() 
                             : "";
 
+                    // Check if this Instagram account is already linked to another user
+                    java.util.Optional<InstagramAccount> existingAccount = instagramAccountRepository.findById(igAccountId);
+                    if (existingAccount.isPresent() && !existingAccount.get().getUserId().equals(user.getId())) {
+                        throw new CustomException("This Instagram account is already connected to another GramFlow account.", HttpStatus.CONFLICT);
+                    }
+
                     // Create or update account info
                     InstagramAccount account = instagramAccountRepository.findByUserId(user.getId())
                             .orElse(new InstagramAccount());

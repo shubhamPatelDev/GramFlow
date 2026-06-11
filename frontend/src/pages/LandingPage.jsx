@@ -95,7 +95,7 @@ export default function LandingPage() {
               <ul className="space-y-4 flex-1">
                 <li className="flex items-center gap-3"><ShieldCheck className="text-primary" size={20}/> <span>1 Active Automation Rule</span></li>
                 <li className="flex items-center gap-3"><ShieldCheck className="text-primary" size={20}/> <span>Basic Analytics</span></li>
-                <li className="flex items-center gap-3"><ShieldCheck className="text-primary" size={20}/> <span>1 Instagram Account</span></li>
+                <li className="flex items-center gap-3"><ShieldCheck className="text-primary" size={20}/> <span>Up to 50 Auto-Replies/mo</span></li>
               </ul>
               <Link to="/login" className="block w-full">
                 <Button variant="outline" className="w-full h-14 rounded-xl border-white/10 hover:bg-white/5 text-lg font-bold">Get Started Free</Button>
@@ -116,9 +116,9 @@ export default function LandingPage() {
                 </div>
               </div>
               <ul className="space-y-4 flex-1 relative">
-                <li className="flex items-center gap-3"><Zap className="text-primary" size={20}/> <span className="font-bold">Unlimited Automations</span></li>
+                <li className="flex items-center gap-3"><Zap className="text-primary" size={20}/> <span className="font-bold">Unlimited Automation Rules</span></li>
                 <li className="flex items-center gap-3"><BarChart3 className="text-primary" size={20}/> <span className="font-bold">Advanced Insights & Leaderboards</span></li>
-                <li className="flex items-center gap-3"><MessageSquare className="text-primary" size={20}/> <span>Priority Support</span></li>
+                <li className="flex items-center gap-3"><MessageSquare className="text-primary" size={20}/> <span>Priority Email Support</span></li>
               </ul>
               <Link to="/login" className="block w-full relative">
                 <Button className="w-full h-14 rounded-xl bg-primary hover:bg-primary/90 text-white text-lg font-bold glow-indigo">Upgrade to Pro</Button>
