@@ -130,9 +130,12 @@ export default function LandingPage() {
 
       <footer className="mt-auto py-12 border-t border-white/5 px-6 md:px-12">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex items-center gap-2 opacity-50">
-            <Zap size={20} />
-            <span className="font-headline font-bold">GramFlow</span>
+          <div className="flex flex-col items-center md:items-start gap-2 opacity-50">
+            <div className="flex items-center gap-2">
+              <Zap size={20} />
+              <span className="font-headline font-bold">GramFlow</span>
+            </div>
+            <span className="text-xs">© 2026 Shubham Prakash Patel. All rights reserved.</span>
           </div>
           <div className="flex gap-8 text-sm text-muted-foreground">
             <Link to="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
